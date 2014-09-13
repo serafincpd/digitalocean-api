@@ -27,7 +27,7 @@ class BaseAPI(object):
         if not self.token:
             raise NoTokenProvided()
 
-        headers.update({'Authorization': 'Bearer {}'.format(self.token)})
+        headers.update({'Authorization': 'Bearer {:s}'.format(self.token)})
 
     def __get(self, url, params, headers):
         return requests.get(url, params=params, headers=headers)
@@ -58,10 +58,10 @@ class BaseAPI(object):
 
         self.__set_authorization(headers)
 
-        request = METHODS[method.lower()]
+        request_method = METHODS[method.lower()]
         url = urljoin(self.endpoint, url)
 
-        return request(url, params=params, headers=headers)
+        return request_method(url, params=params, headers=headers)
 
     def request(self, url, method, params=dict()):
         response = self.__request(url, method, params)
@@ -73,10 +73,10 @@ class BaseAPI(object):
 
         if not response.ok:
             if response.status_code >= 500:
-                raise ResponseError('Server did not respond. {:s} {:d}'.format(
+                raise ResponseError('Server did not respond. {:d} {:s}'.format(
                     response.status_code, response.reason))
 
-            raise RequestError('{:s} {:d}. Message: {:s}'.format(
+            raise RequestError('{:d} {:s}. Message: {:s}'.format(
                 response.status_code, response.reason, json['message']))
 
         return json
