@@ -14,6 +14,12 @@ from digitalocean.api.exceptions import (
 
 
 class BaseAPI(object):
+
+    endpoint = 'https://api.digitalocean.com/v2/'
+
+    def __init__(self, token=None):
+        self.token = token
+
     def __str__(self):
         return b'<{:s} at {:#x}>'.format(type(self).__name__, id(self))
 
