@@ -39,21 +39,23 @@ class BaseAPI(object):
         return requests.get(url, params=params, headers=headers)
 
     def __post(self, url, params, headers):
-        self.__set_content_type('application/json')
-        return requests.post(url, data=params, headers=headers)
+        self.__set_content_type(headers, 'application/json')
+        return requests.post(url, params=params, headers=headers)
 
     def __put(self, url, params, headers):
-        self.__set_content_type('application/json')
-        return requests.put(url, data=params, headers=headers)
+        self.__set_content_type(headers, 'application/json')
+        return requests.put(url, params=params, headers=headers)
 
     def __delete(self, url, params, headers):
-        self.__set_content_type('application/x-www-form-urlencoded')
+        self.__set_content_type(headers, 'application/x-www-form-urlencoded')
         return requests.delete(url, params=params, headers=headers)
 
     def __head(self, url, params, headers):
         return requests.head(url, headers=headers)
 
-    def __request(self, url, method, params, headers=dict()):
+    def __request(self, url, method, params, headers=None):
+        headers = headers or {}
+
         METHODS = {
             'get': self.__get,
             'post': self.__post,
@@ -69,20 +71,26 @@ class BaseAPI(object):
 
         return request_method(url, params=params, headers=headers)
 
-    def request(self, url, method, params=dict()):
+    def request(self, url, method, params=None):
+        params = params or {}
+
         response = self.__request(url, method, params)
 
-        try:
-            json = response.json()
-        except ValueError:
-            raise JSONDecodeError()
+        if response.status_code == 204:
+            json = ''
+        else:
+            try:
+                json = response.json()
+            except ValueError:
+                raise JSONDecodeError()
 
-        if not response.ok:
-            if response.status_code >= 500:
-                raise ResponseError('Server did not respond. {:d} {:s}'.format(
-                    response.status_code, response.reason))
+            if not response.ok:
+                if response.status_code >= 500:
+                    raise ResponseError(
+                        'Server did not respond. {:d} {:s}'.format(
+                            response.status_code, response.reason))
 
-            raise RequestError('{:d} {:s}. Message: {:s}'.format(
-                response.status_code, response.reason, json['message']))
+                raise RequestError('{:d} {:s}. Message: {:s}'.format(
+                    response.status_code, response.reason, json['message']))
 
         return json

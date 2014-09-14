@@ -10,10 +10,10 @@ class Domains(BaseAPI):
 
         return self.request('domains', 'GET')
 
-    def create(self, name, ip_addr):
+    def create(self, name, ip_address):
         "Create a new Domain"
 
-        params = {'name': name, 'ip_address': ip_addr}
+        params = {'name': name, 'ip_address': ip_address}
         return self.request('domains', 'POST', params=params)
 
     def get(self, domain_id):
@@ -31,13 +31,23 @@ class Domains(BaseAPI):
 
         return self.request('domains/{}/records'.format(domain_id), 'GET')
 
-    def create_domain_record(self, domain_id, rtype, name, data,
-                             priority, port, weight):
+    def create_domain_record(self, domain_id, rtype=None, name=None, data=None,
+                             priority=None, port=None, weight=None):
         "Create a new Domain Record"
 
-        params = {'type': rtype, 'name': name, 'data': data,
-                  'priority': priority, 'port': port, 'weight': weight}
-        return self.request('domains/{}/records', 'POST', params=params)
+        params = {'type': rtype}
+        if name:
+            params.update({'name': name})
+        if data:
+            params.update({'data': data})
+        if priority:
+            params.update({'priority': priority})
+        if port:
+            params.update({'port': port})
+        if weight:
+            params.update({'weight': weight})
+        return self.request(
+            'domains/{}/records'.format(domain_id), 'POST', params=params)
 
     def get_domain_record(self, domain_id, record_id):
         "Retrieve an existing Domain Record"

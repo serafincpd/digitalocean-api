@@ -29,7 +29,7 @@ class Images(BaseAPI):
     def transfer(self, image_id, region):
         "Transfer an Image"
 
-        params = {'region': region}
+        params = {'type': 'transfer', 'region': region}
         return self.request(
             'images/{}/actions'.format(image_id), 'POST', params=params)
 

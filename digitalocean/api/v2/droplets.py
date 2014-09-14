@@ -39,14 +39,21 @@ class Droplets(BaseAPI):
 
         return self.request('droplets/{}/actions'.format(droplet_id), 'GET')
 
-    def create(self, name, region, size, image, ssh_keys, backups, ipv6,
-               private_networking, user_data):
+    def create(self, name, region, size, image, ssh_keys=None, backups=None,
+               ipv6=None, private_networking=None, user_data=None):
         "Create a new Droplet"
 
-        params = {'name': name, 'region': region, 'size': size,
-                  'image': image, 'ssh_keys': ssh_keys, 'backups': backups,
-                  'ipv6': ipv6, 'private_networking': private_networking,
-                  'user_data': user_data}
+        params = {'name': name, 'region': region, 'size': size, 'image': image}
+        if ssh_keys:
+            params.update({'ssh_keys': ssh_keys})
+        if backups:
+            params.update({'backups': backups})
+        if ipv6:
+            params.update({'ipv6': ipv6})
+        if private_networking:
+            params.update({'private_networking': private_networking})
+        if user_data:
+            params.update({'user_data': user_data})
         return self.request('droplets', 'POST', params=params)
 
     def get(self, droplet_id):
@@ -129,10 +136,14 @@ class Droplets(BaseAPI):
 
         return self.__make_action(droplet_id, 'enable_private_networking')
 
-    def snapshot(self, droplet_id, name):
+    def snapshot(self, droplet_id, name=None):
         "Snapshot"
 
-        return self.__make_action(droplet_id, 'snapshot', name=name)
+        params = {}
+        if name:
+            params.update({'name': name})
+
+        return self.__make_action(droplet_id, 'snapshot', **params)
 
     def get_droplet_action(self, droplet_id, action_id):
         "Retrieve a Droplet Action"
