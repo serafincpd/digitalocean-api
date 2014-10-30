@@ -13,7 +13,8 @@ class TestDroplets:
     @mock.patch.object(requests, 'get')
     def test_all(self, get):
         response = requests.Response()
-        response._content = b'''{
+        response._content = b'''
+        {
           "droplets": [
             {
               "id": 19,
@@ -47,12 +48,7 @@ class TestDroplets:
                 ],
                 "created_at": "2014-09-05T02:02:05Z"
               },
-              "size": {
-                "slug": "512mb",
-                "transfer": 1,
-                "price_monthly": 5.0,
-                "price_hourly": 0.00744
-              },
+              "size_slug": "512mb",
               "locked": false,
               "status": "active",
               "networks": {
@@ -114,7 +110,7 @@ class TestDroplets:
         assert data['droplets'][0]['disk'] == 20
         assert 'region' in data['droplets'][0]
         assert 'image' in data['droplets'][0]
-        assert 'size' in data['droplets'][0]
+        assert 'size_slug' in data['droplets'][0]
         assert 'locked' in data['droplets'][0]
         assert 'status' in data['droplets'][0]
         assert 'networks' in data['droplets'][0]
@@ -256,7 +252,8 @@ class TestDroplets:
     @mock.patch.object(requests, 'post')
     def test_create(self, post):
         response = requests.Response()
-        response._content = b'''{
+        response._content = b'''
+        {
           "droplet": {
             "id": 25,
             "name": "My-Droplet",
@@ -289,12 +286,7 @@ class TestDroplets:
               ],
               "created_at": "2014-09-05T02:02:07Z"
             },
-            "size": {
-              "slug": "512mb",
-              "transfer": 1,
-              "price_monthly": 5.0,
-              "price_hourly": 0.00744
-            },
+            "size_slug": "512mb",
             "locked": false,
             "status": "new",
             "networks": {
@@ -336,13 +328,14 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'name': 'My-Droplet', 'region': 'nyc1',
-                    'size': '512mb', 'image': 449676389})
+            data=('{"region": "nyc1", "name": "My-Droplet",'
+                  ' "image": 449676389, "size": "512mb"}'))
 
         assert len(data) == 2
         assert data['droplet']['id'] == 25
         assert data['droplet']['name'] == 'My-Droplet'
         assert data['droplet']['memory'] == 512
+        assert data['droplet']['size_slug'] == '512mb'
         assert data['droplet']['region']['slug'] == 'nyc1'
         assert data['links']['actions'][0]['id'] == 20
         assert data['links']['actions'][0]['rel'] == 'create'
@@ -350,7 +343,8 @@ class TestDroplets:
     @mock.patch.object(requests, 'get')
     def test_get(self, get):
         response = requests.Response()
-        response._content = b'''{
+        response._content = b'''
+        {
           "droplet": {
             "id": 20,
             "name": "test.example.com",
@@ -383,12 +377,7 @@ class TestDroplets:
               ],
               "created_at": "2014-09-05T02:02:05Z"
             },
-            "size": {
-              "slug": "512mb",
-              "transfer": 1,
-              "price_monthly": 5.0,
-              "price_hourly": 0.00744
-            },
+            "size_slug": "512mb",
             "locked": false,
             "status": "active",
             "networks": {
@@ -440,6 +429,7 @@ class TestDroplets:
         assert len(data) == 1
         assert data['droplet']['id'] == 20
         assert data['droplet']['name'] == 'test.example.com'
+        assert data['droplet']['size_slug'] == '512mb'
 
     @mock.patch.object(requests, 'delete')
     def test_delete(self, delete):
@@ -485,7 +475,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'reboot'})
+            data='{"type": "reboot"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -518,7 +508,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'power_cycle'})
+            data='{"type": "power_cycle"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -551,7 +541,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'shutdown'})
+            data='{"type": "shutdown"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -584,7 +574,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'power_off'})
+            data='{"type": "power_off"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -617,7 +607,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'power_on'})
+            data='{"type": "power_on"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -650,7 +640,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'password_reset'})
+            data='{"type": "password_reset"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -683,7 +673,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'resize', 'size': '1gb'})
+            data='{"type": "resize", "size": "1gb"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -716,7 +706,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'restore', 'image': 449676379})
+            data='{"image": 449676379, "type": "restore"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -749,7 +739,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'rebuild', 'image': 449676379})
+            data='{"image": 449676379, "type": "rebuild"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -763,7 +753,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'rebuild', 'image': 'image_slug'})
+            data='{"image": "image_slug", "type": "rebuild"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -796,7 +786,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'rename', 'name': 'New Name'})
+            data='{"type": "rename", "name": "New Name"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -829,7 +819,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'change_kernel', 'kernel': 61833229})
+            data='{"kernel": 61833229, "type": "change_kernel"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -862,7 +852,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'enable_ipv6'})
+            data='{"type": "enable_ipv6"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -895,7 +885,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'disable_backups'})
+            data='{"type": "disable_backups"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -928,7 +918,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'enable_private_networking'})
+            data='{"type": "enable_private_networking"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -962,7 +952,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'snapshot'})
+            data='{"type": "snapshot"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4
@@ -976,7 +966,7 @@ class TestDroplets:
             'https://api.digitalocean.com/v2/droplets/123/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'snapshot', 'name': 'nginx-fresh'})
+            data='{"type": "snapshot", "name": "nginx-fresh"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 4

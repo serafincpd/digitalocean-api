@@ -196,7 +196,7 @@ class TestImages:
             'https://api.digitalocean.com/v2/images/449676391/actions',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'type': 'transfer', 'region': 'nyc1'})
+            data='{"region": "nyc1", "type": "transfer"}')
 
         assert len(data) == 1
         assert data['action']['id'] == 23

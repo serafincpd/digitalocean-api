@@ -63,7 +63,7 @@ class TestDomains:
             'https://api.digitalocean.com/v2/domains',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'name': 'example.com', 'ip_address': '127.0.0.1'})
+            data='{"ip_address": "127.0.0.1", "name": "example.com"}')
 
         assert len(data) == 1
         assert data['domain']['name'] == 'example.com'
@@ -219,8 +219,8 @@ class TestDomains:
             'https://api.digitalocean.com/v2/domains/123/records',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'name': 'subdomain',
-                    'data': '2001:db8::ff00:42:8329', 'type': 'AAAA'})
+            data=('{"data": "2001:db8::ff00:42:8329",'
+                  ' "type": "AAAA", "name": "subdomain"}'))
 
         assert len(data) == 1
         assert data['domain_record']['id'] == 16

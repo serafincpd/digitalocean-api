@@ -66,7 +66,7 @@ class TestKeys:
             'https://api.digitalocean.com/v2/account/keys',
             headers={'content-type': 'application/json',
                      'Authorization': 'Bearer token'},
-            params={'public_key': 'ssh-rsa example', 'name': 'Example Key'})
+            data='{"public_key": "ssh-rsa example", "name": "Example Key"}')
 
         assert len(data) == 1
         assert data['ssh_key']['id'] == 2
