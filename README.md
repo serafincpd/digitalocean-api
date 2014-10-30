@@ -34,3 +34,11 @@ Examples
 >>> client.droplets.get_droplet_action(droplet_id=2323856, action_id=32469004)
 {u'action': {u'status': u'completed', u'resource_id': 2323856, u'region': u'ams2', u'completed_at': u'2014-09-15T11:05:13Z', u'started_at': u'2014-09-15T11:04:36Z', u'type': u'shutdown', u'id': 32469004, u'resource_type': u'droplet'}}
 ```
+
+
+TODO
+====
+
+1. Documentation
+2. Dealing with pagination
+3. Better API with manager and models
