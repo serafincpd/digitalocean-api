@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+import json
 from urlparse import urljoin
 
 import requests
@@ -40,7 +41,7 @@ class BaseAPI(object):
 
     def __post(self, url, params, headers):
         self.__set_content_type(headers, 'application/json')
-        return requests.post(url, params=params, headers=headers)
+        return requests.post(url, data=json.dumps(params), headers=headers)
 
     def __put(self, url, params, headers):
         self.__set_content_type(headers, 'application/json')

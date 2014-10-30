@@ -45,6 +45,8 @@ class Droplets(BaseAPI):
 
         params = {'name': name, 'region': region, 'size': size, 'image': image}
         if ssh_keys:
+            if not isinstance(ssh_keys, list):
+                ssh_keys = [ssh_keys]
             params.update({'ssh_keys': ssh_keys})
         if backups:
             params.update({'backups': backups})
