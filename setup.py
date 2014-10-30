@@ -25,7 +25,7 @@ class PyTest(TestCommand):
 
 setup(
     name='digitalocean-api',
-    version='0.9.1b',
+    version='0.9.3b',
     description='Python wrapper for Digital Ocean API v2',
     author='Valery Lisay',
     author_email='valery@lisay.ru',
