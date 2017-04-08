@@ -61,9 +61,15 @@ class Domains(BaseAPI):
         return self.request(
             'domains/{}/records/{}'.format(domain_id, record_id), 'DELETE')
 
-    def update_domain_record(self, domain_id, record_id, name):
+    def update_domain_record(self, domain_id, record_id, name=None, data=None):
         "Update a Domain Record"
 
-        params = {'name': name}
+        params = {}
+
+        if name:
+            params.update({'name': name})
+        if data:
+            params.update({'data': data})
+
         return self.request('domains/{}/records/{}'.format(
             domain_id, record_id), 'PUT', params=params)
